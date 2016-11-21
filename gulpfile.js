@@ -1,3 +1,4 @@
+// Generated on 2016-03-15 using generator-angular 0.15.1
 'use strict';
 
 var gulp = require('gulp');
@@ -7,6 +8,10 @@ var lazypipe = require('lazypipe');
 var rimraf = require('rimraf');
 var wiredep = require('wiredep').stream;
 var runSequence = require('run-sequence');
+var del = require('del');
+var browserSync = require('browser-sync');
+var reload = browserSync.reload;
+
 
 //app directory structor
 var yeoman = {
@@ -66,13 +71,34 @@ var styles = lazypipe()
 ///////////
 
 gulp.task('styles', function () {
+ /* return gulp.src(paths.styles)
+    .pipe(styles());*/
   return gulp.src(paths.styles)
-    .pipe(styles());
+  .pipe($.plumber())
+    .pipe($.sourcemaps.init())
+    .pipe($.sass.sync({
+      outputStyle: 'expanded',
+      precision: 10,
+      includePaths: ['.']
+    }).on('error', $.sass.logError))
+    .pipe($.autoprefixer({browsers: ['> 1%', 'last 2 versions', 'Firefox ESR']}))
+    .pipe($.sourcemaps.write())
+    .pipe(gulp.dest('.tmp/styles'))
+    .pipe(reload({stream: true}));
+
 });
 
 gulp.task('lint:scripts', function () {
+ /* return gulp.src(paths.scripts)
+    .pipe(lintScripts());*/
   return gulp.src(paths.scripts)
-    .pipe(lintScripts());
+    .pipe($.plumber())
+    .pipe($.sourcemaps.init())
+    .pipe($.babel())
+    .pipe($.sourcemaps.write('.'))
+    .pipe(gulp.dest('.tmp/scripts'))
+    .pipe(reload({stream: true}));
+
 });
 
 gulp.task('clean:tmp', function (cb) {
@@ -82,6 +108,25 @@ gulp.task('clean:tmp', function (cb) {
 gulp.task('start:client', ['start:server', 'styles', 'lint:scripts'], function () {
   openURL('http://localhost:9000');
 });
+
+
+gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
+
+// inject bower components
+gulp.task('wiredep', function(){
+  gulp.src('app/styles/*.scss')
+  .pipe(wiredep({
+    ignorePath: /^(\.\.\/)+/
+  }))
+  .pipe(gulp.dest('app/styles'));
+
+gulp.src('app/*.html')
+  .pipe(wiredep({
+    ignorePath: /^(\.\.\/)*\.\./
+  }))
+  .pipe(gulp.dest('app'));
+});
+
 
 gulp.task('start:server', function() {
   $.connect.server({
@@ -93,6 +138,11 @@ gulp.task('start:server', function() {
         connect["static"]('./bower_components')]]
     }
   });
+
+
+
+
+
 });
 
 gulp.task('start:server:test', function() {
@@ -192,7 +242,6 @@ gulp.task('client:build', ['bower', 'html', 'styles'], function () {
 
 gulp.task('html', function () {
   return gulp.src(yeoman.app + '/views/**/*')
-    .pipe($.htmlmin({collapseWhitespace: true})) //压缩
     .pipe(gulp.dest(yeoman.dist + '/views'));
 });
 
