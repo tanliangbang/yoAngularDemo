@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc function
- * @name reactTestApp.controller:MainCtrl
+ * @name webApp.controller:MainCtrl
  * @description
  * # MainCtrl
- * Controller of the reactTestApp
+ * Controller of the webApp
  */
-angular.module('reactTestApp')
+angular.module('webApp')
   .controller('MainCtrl', function () {
     this.awesomeThings = [
       'HTML5 Boilerplate',

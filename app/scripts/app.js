@@ -2,14 +2,14 @@
 
 /**
  * @ngdoc overview
- * @name reactTestApp
+ * @name webApp
  * @description
- * # reactTestApp
+ * # webApp
  *
  * Main module of the application.
  */
 angular
-  .module('reactTestApp', [
+  .module('webApp', [
     'ngAnimate',
     'ngCookies',
     'ngResource',
@@ -17,7 +17,7 @@ angular
     'ngSanitize',
     'ngTouch'
   ])
-  .config(function ($routeProvider,$locationProvider) {
+  .config(function ($routeProvider) {
     $routeProvider
       .when('/', {
         templateUrl: 'views/main.html',
@@ -32,9 +32,4 @@ angular
       .otherwise({
         redirectTo: '/'
       });
-     $locationProvider.html5Mode(true);
   });
-
-
-
-
